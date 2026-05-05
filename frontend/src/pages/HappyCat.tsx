@@ -34,51 +34,94 @@ const trendData = [
   { year: "2020", score: 7.81 },
   { year: "2021", score: 7.84 },
   { year: "2022", score: 7.82 },
-  { year: "2023", score: 7.80 },
+  { year: "2023", score: 7.8 },
   { year: "2024", score: 7.74 },
 ];
 
 const comparisonData = [
   { year: "2018", scoreA: 7.63, scoreB: 7.55 },
-  { year: "2019", scoreA: 7.77, scoreB: 7.60 },
+  { year: "2019", scoreA: 7.77, scoreB: 7.6 },
   { year: "2020", scoreA: 7.81, scoreB: 7.65 },
   { year: "2021", scoreA: 7.84, scoreB: 7.62 },
   { year: "2022", scoreA: 7.82, scoreB: 7.58 },
-  { year: "2023", scoreA: 7.80, scoreB: 7.58 },
+  { year: "2023", scoreA: 7.8, scoreB: 7.58 },
   { year: "2024", scoreA: 7.74, scoreB: 7.59 },
 ];
 
-const countryMetrics: Record<string, { gdp: string; social: string; life: string; corruption: string }> = {
-  Finland:     { gdp: "$53,982", social: "0.954", life: "81.7 yrs", corruption: "0.195" },
-  Denmark:     { gdp: "$68,300", social: "0.949", life: "80.9 yrs", corruption: "0.180" },
-  Switzerland: { gdp: "$91,930", social: "0.942", life: "83.4 yrs", corruption: "0.185" },
-  Iceland:     { gdp: "$78,020", social: "0.983", life: "82.9 yrs", corruption: "0.172" },
-  Netherlands: { gdp: "$63,750", social: "0.939", life: "82.0 yrs", corruption: "0.198" },
-  Norway:      { gdp: "$89,090", social: "0.954", life: "82.4 yrs", corruption: "0.182" },
-  Germany:     { gdp: "$48,720", social: "0.901", life: "81.3 yrs", corruption: "0.218" },
+const countryMetrics: Record<
+  string,
+  { gdp: string; social: string; life: string; corruption: string }
+> = {
+  Finland: {
+    gdp: "$53,982",
+    social: "0.954",
+    life: "81.7 yrs",
+    corruption: "0.195",
+  },
+  Denmark: {
+    gdp: "$68,300",
+    social: "0.949",
+    life: "80.9 yrs",
+    corruption: "0.180",
+  },
+  Switzerland: {
+    gdp: "$91,930",
+    social: "0.942",
+    life: "83.4 yrs",
+    corruption: "0.185",
+  },
+  Iceland: {
+    gdp: "$78,020",
+    social: "0.983",
+    life: "82.9 yrs",
+    corruption: "0.172",
+  },
+  Netherlands: {
+    gdp: "$63,750",
+    social: "0.939",
+    life: "82.0 yrs",
+    corruption: "0.198",
+  },
+  Norway: {
+    gdp: "$89,090",
+    social: "0.954",
+    life: "82.4 yrs",
+    corruption: "0.182",
+  },
+  Germany: {
+    gdp: "$48,720",
+    social: "0.901",
+    life: "81.3 yrs",
+    corruption: "0.218",
+  },
 };
 
 const rankingsData = [
-  { rank: 1,  country: "Finland",     region: "Europe",  score: 7.804 },
-  { rank: 2,  country: "Denmark",     region: "Europe",  score: 7.586 },
-  { rank: 3,  country: "Switzerland", region: "Europe",  score: 7.559 },
-  { rank: 4,  country: "Iceland",     region: "Europe",  score: 7.525 },
-  { rank: 5,  country: "Netherlands", region: "Europe",  score: 7.464 },
-  { rank: 6,  country: "Norway",      region: "Europe",  score: 7.392 },
-  { rank: 7,  country: "Sweden",      region: "Europe",  score: 7.344 },
-  { rank: 8,  country: "Luxembourg",  region: "Europe",  score: 7.122 },
-  { rank: 9,  country: "New Zealand", region: "Oceania", score: 7.123 },
-  { rank: 10, country: "Austria",     region: "Europe",  score: 7.097 },
+  { rank: 1, country: "Finland", region: "Europe", score: 7.804 },
+  { rank: 2, country: "Denmark", region: "Europe", score: 7.586 },
+  { rank: 3, country: "Switzerland", region: "Europe", score: 7.559 },
+  { rank: 4, country: "Iceland", region: "Europe", score: 7.525 },
+  { rank: 5, country: "Netherlands", region: "Europe", score: 7.464 },
+  { rank: 6, country: "Norway", region: "Europe", score: 7.392 },
+  { rank: 7, country: "Sweden", region: "Europe", score: 7.344 },
+  { rank: 8, country: "Luxembourg", region: "Europe", score: 7.122 },
+  { rank: 9, country: "New Zealand", region: "Oceania", score: 7.123 },
+  { rank: 10, country: "Austria", region: "Europe", score: 7.097 },
 ];
 
 function RankBadge({ rank }: { rank: number }) {
   const color =
-    rank === 1 ? "bg-amber-400" :
-    rank === 2 ? "bg-slate-400" :
-    rank === 3 ? "bg-orange-500" :
-    "bg-teal-700";
+    rank === 1
+      ? "bg-amber-400"
+      : rank === 2
+        ? "bg-slate-400"
+        : rank === 3
+          ? "bg-orange-500"
+          : "bg-teal-700";
   return (
-    <div className={`w-7 h-7 rounded-full ${color} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
+    <div
+      className={`w-7 h-7 rounded-full ${color} text-white flex items-center justify-center text-xs font-bold shrink-0`}
+    >
       {rank}
     </div>
   );
@@ -99,28 +142,32 @@ export default function HappyCat() {
 
   return (
     <div className="min-h-screen bg-stone-100">
-
       {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-6 py-3 flex items-center justify-between">
+      <header className="bg-white border-b border-stone-200  py-3 flex items-center justify-around">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-lg bg-amber-400 flex items-center justify-center text-xl">
-            🐱
-          </div>
-          <span className="font-bold text-lg text-stone-800">HappyCat</span>
+          {/* Use Vite/React's import for static assets */}
+          <img
+            src="/src/assets/happyCat_logo.png"
+            alt="HappyCat"
+            className="w-25"
+          />
         </div>
         <div className="text-right">
-          <h1 className="text-xl font-bold text-stone-800">World Happiness Report Dashboard</h1>
-          <p className="text-xs text-stone-500">Track and compare global happiness metrics across countries and time periods</p>
+          <h1 className="text-xl font-bold text-stone-800">
+            World Happiness Report Dashboard
+          </h1>
+          <p className="text-xs text-stone-500">
+            Track and compare global happiness metrics across countries and time
+            periods
+          </p>
         </div>
       </header>
 
       {/* Main */}
       <main className="p-5">
         <div className="grid grid-cols-[3fr_2fr] gap-5 max-w-[1400px] mx-auto">
-
           {/* Left column */}
           <div className="space-y-5">
-
             {/* Happiness Trends */}
             <Card className="shadow-sm">
               <CardHeader className="pb-0 pt-4 px-5">
@@ -129,13 +176,18 @@ export default function HappyCat() {
                     📊 Happiness Trends
                   </div>
                   <div className="flex gap-2">
-                    <Select value={trendCountry} onValueChange={setTrendCountry}>
+                    <Select
+                      value={trendCountry}
+                      onValueChange={setTrendCountry}
+                    >
                       <SelectTrigger className="h-8 w-32 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.keys(countryMetrics).map((c) => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -154,13 +206,35 @@ export default function HappyCat() {
               </CardHeader>
               <CardContent className="pt-2 px-2 pb-4">
                 <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={trendData} margin={{ top: 8, right: 16, left: -10, bottom: 0 }}>
+                  <LineChart
+                    data={trendData}
+                    margin={{ top: 8, right: 16, left: -10, bottom: 0 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-                    <XAxis dataKey="year" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                    <YAxis domain={[0, 10]} ticks={[0, 3, 6, 10]} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ fontSize: 12 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 10]}
+                      ticks={[0, 3, 6, 10]}
+                      tick={{ fontSize: 12 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#fff", border: "1px solid #e7e5e4", borderRadius: "8px", fontSize: "12px" }}
-                      formatter={(v) => [typeof v === "number" ? v.toFixed(2) : v, trendCountry]}
+                      contentStyle={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #e7e5e4",
+                        borderRadius: "8px",
+                        fontSize: "12px",
+                      }}
+                      formatter={(v) => [
+                        typeof v === "number" ? v.toFixed(2) : v,
+                        trendCountry,
+                      ]}
                     />
                     <Line
                       type="monotone"
@@ -190,7 +264,9 @@ export default function HappyCat() {
                       </SelectTrigger>
                       <SelectContent>
                         {Object.keys(countryMetrics).map((c) => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -200,7 +276,9 @@ export default function HappyCat() {
                       </SelectTrigger>
                       <SelectContent>
                         {Object.keys(countryMetrics).map((c) => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -209,19 +287,51 @@ export default function HappyCat() {
               </CardHeader>
               <CardContent className="pt-2 pb-4">
                 <div className="grid grid-cols-[3fr_2fr] gap-4">
-
                   {/* Chart */}
                   <div>
                     <ResponsiveContainer width="100%" height={200}>
-                      <LineChart data={comparisonData} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
+                      <LineChart
+                        data={comparisonData}
+                        margin={{ top: 8, right: 8, left: -10, bottom: 0 }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-                        <XAxis dataKey="year" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                        <YAxis domain={[0, 10]} ticks={[0, 3, 6, 10]} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                        <Tooltip
-                          contentStyle={{ backgroundColor: "#fff", border: "1px solid #e7e5e4", borderRadius: "8px", fontSize: "12px" }}
+                        <XAxis
+                          dataKey="year"
+                          tick={{ fontSize: 12 }}
+                          tickLine={false}
+                          axisLine={false}
                         />
-                        <Line type="monotone" dataKey="scoreA" name={compareA} stroke="#0d9488" strokeWidth={2} dot={{ r: 4, fill: "#0d9488", strokeWidth: 0 }} />
-                        <Line type="monotone" dataKey="scoreB" name={compareB} stroke="#f97316" strokeWidth={2} dot={{ r: 4, fill: "#f97316", strokeWidth: 0 }} />
+                        <YAxis
+                          domain={[0, 10]}
+                          ticks={[0, 3, 6, 10]}
+                          tick={{ fontSize: 12 }}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#fff",
+                            border: "1px solid #e7e5e4",
+                            borderRadius: "8px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="scoreA"
+                          name={compareA}
+                          stroke="#0d9488"
+                          strokeWidth={2}
+                          dot={{ r: 4, fill: "#0d9488", strokeWidth: 0 }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="scoreB"
+                          name={compareB}
+                          stroke="#f97316"
+                          strokeWidth={2}
+                          dot={{ r: 4, fill: "#f97316", strokeWidth: 0 }}
+                        />
                       </LineChart>
                     </ResponsiveContainer>
                     {/* Legend */}
@@ -241,23 +351,49 @@ export default function HappyCat() {
                   <div className="text-sm">
                     <div className="grid grid-cols-3 gap-x-3 pb-1.5 border-b border-stone-200 font-medium">
                       <span className="text-stone-500 text-xs">Metric</span>
-                      <span className="text-teal-600 text-xs text-right">{compareA}</span>
-                      <span className="text-orange-500 text-xs text-right">{compareB}</span>
+                      <span className="text-teal-600 text-xs text-right">
+                        {compareA}
+                      </span>
+                      <span className="text-orange-500 text-xs text-right">
+                        {compareB}
+                      </span>
                     </div>
                     {[
-                      { label: "GDP per Capita", a: metricsA.gdp,        b: metricsB.gdp },
-                      { label: "Social Support", a: metricsA.social,     b: metricsB.social },
-                      { label: "Life Expectancy", a: metricsA.life,      b: metricsB.life },
-                      { label: "Corruption",      a: metricsA.corruption, b: metricsB.corruption },
+                      {
+                        label: "GDP per Capita",
+                        a: metricsA.gdp,
+                        b: metricsB.gdp,
+                      },
+                      {
+                        label: "Social Support",
+                        a: metricsA.social,
+                        b: metricsB.social,
+                      },
+                      {
+                        label: "Life Expectancy",
+                        a: metricsA.life,
+                        b: metricsB.life,
+                      },
+                      {
+                        label: "Corruption",
+                        a: metricsA.corruption,
+                        b: metricsB.corruption,
+                      },
                     ].map((row) => (
-                      <div key={row.label} className="grid grid-cols-3 gap-x-3 py-2 border-b border-stone-100 text-xs">
+                      <div
+                        key={row.label}
+                        className="grid grid-cols-3 gap-x-3 py-2 border-b border-stone-100 text-xs"
+                      >
                         <span className="text-stone-600">{row.label}</span>
-                        <span className="text-right text-stone-700 font-medium">{row.a}</span>
-                        <span className="text-right text-stone-700 font-medium">{row.b}</span>
+                        <span className="text-right text-stone-700 font-medium">
+                          {row.a}
+                        </span>
+                        <span className="text-right text-stone-700 font-medium">
+                          {row.b}
+                        </span>
                       </div>
                     ))}
                   </div>
-
                 </div>
               </CardContent>
             </Card>
@@ -301,10 +437,18 @@ export default function HappyCat() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-stone-200">
-                    <TableHead className="text-xs text-stone-500 w-12">Rank</TableHead>
-                    <TableHead className="text-xs text-stone-500">Country</TableHead>
-                    <TableHead className="text-xs text-stone-500">Region</TableHead>
-                    <TableHead className="text-xs text-stone-500 text-right">Happiness Score</TableHead>
+                    <TableHead className="text-xs text-stone-500 w-12">
+                      Rank
+                    </TableHead>
+                    <TableHead className="text-xs text-stone-500">
+                      Country
+                    </TableHead>
+                    <TableHead className="text-xs text-stone-500">
+                      Region
+                    </TableHead>
+                    <TableHead className="text-xs text-stone-500 text-right">
+                      Happiness Score
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -313,8 +457,12 @@ export default function HappyCat() {
                       <TableCell className="py-2.5">
                         <RankBadge rank={row.rank} />
                       </TableCell>
-                      <TableCell className="py-2.5 font-medium text-sm text-stone-800">{row.country}</TableCell>
-                      <TableCell className="py-2.5 text-sm text-stone-400">{row.region}</TableCell>
+                      <TableCell className="py-2.5 font-medium text-sm text-stone-800">
+                        {row.country}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-sm text-stone-400">
+                        {row.region}
+                      </TableCell>
                       <TableCell className="py-2.5 text-sm font-semibold text-stone-700 text-right tabular-nums">
                         {row.score.toFixed(3)}
                       </TableCell>
@@ -340,7 +488,6 @@ export default function HappyCat() {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </main>
     </div>

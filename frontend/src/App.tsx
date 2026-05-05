@@ -1,5 +1,7 @@
+import HappyCat from "@/pages/HappyCat";
+
 function App() {
-  return;
+  return <HappyCat />;
 }
 
 export default App;

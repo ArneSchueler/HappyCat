@@ -1,13 +1,16 @@
 import express from "express";
-import { getRankings } from "../controllers/countries.controller.js";
-
-// Router für Countries definieren
+import {
+  getRankings,
+  getHistory,
+} from "../controllers/countries.controller.js";
 
 const countrieRouter = express.Router();
 
-// Endpoints definieren
+// Test-Route direkt hier (um den Router selbst zu prüfen)
+countrieRouter.get("/ping", (req, res) => res.send("pong"));
 
-// Endpoint: GET /api/countries/rankings?year=2019
+// Haupt-Routen
 countrieRouter.get("/rankings", getRankings);
+countrieRouter.get("/:name/history", getHistory);
 
 export default countrieRouter;

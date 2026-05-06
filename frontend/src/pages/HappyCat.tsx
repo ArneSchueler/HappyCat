@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -28,87 +28,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // ── Static data ──────────────────────────────────────────────────────────────
 
-const trendData = [
-  { year: "2018", score: 7.63 },
-  { year: "2019", score: 7.77 },
-  { year: "2020", score: 7.81 },
-  { year: "2021", score: 7.84 },
-  { year: "2022", score: 7.82 },
-  { year: "2023", score: 7.8 },
-  { year: "2024", score: 7.74 },
-];
-
-const comparisonData = [
-  { year: "2018", scoreA: 7.63, scoreB: 7.55 },
-  { year: "2019", scoreA: 7.77, scoreB: 7.6 },
-  { year: "2020", scoreA: 7.81, scoreB: 7.65 },
-  { year: "2021", scoreA: 7.84, scoreB: 7.62 },
-  { year: "2022", scoreA: 7.82, scoreB: 7.58 },
-  { year: "2023", scoreA: 7.8, scoreB: 7.58 },
-  { year: "2024", scoreA: 7.74, scoreB: 7.59 },
-];
-
-const countryMetrics: Record<
-  string,
-  { gdp: string; social: string; life: string; corruption: string }
-> = {
-  Finland: {
-    gdp: "$53,982",
-    social: "0.954",
-    life: "81.7 yrs",
-    corruption: "0.195",
-  },
-  Denmark: {
-    gdp: "$68,300",
-    social: "0.949",
-    life: "80.9 yrs",
-    corruption: "0.180",
-  },
-  Switzerland: {
-    gdp: "$91,930",
-    social: "0.942",
-    life: "83.4 yrs",
-    corruption: "0.185",
-  },
-  Iceland: {
-    gdp: "$78,020",
-    social: "0.983",
-    life: "82.9 yrs",
-    corruption: "0.172",
-  },
-  Netherlands: {
-    gdp: "$63,750",
-    social: "0.939",
-    life: "82.0 yrs",
-    corruption: "0.198",
-  },
-  Norway: {
-    gdp: "$89,090",
-    social: "0.954",
-    life: "82.4 yrs",
-    corruption: "0.182",
-  },
-  Germany: {
-    gdp: "$48,720",
-    social: "0.901",
-    life: "81.3 yrs",
-    corruption: "0.218",
-  },
-};
-
-const rankingsData = [
-  { rank: 1, country: "Finland", region: "Europe", score: 7.804 },
-  { rank: 2, country: "Denmark", region: "Europe", score: 7.586 },
-  { rank: 3, country: "Switzerland", region: "Europe", score: 7.559 },
-  { rank: 4, country: "Iceland", region: "Europe", score: 7.525 },
-  { rank: 5, country: "Netherlands", region: "Europe", score: 7.464 },
-  { rank: 6, country: "Norway", region: "Europe", score: 7.392 },
-  { rank: 7, country: "Sweden", region: "Europe", score: 7.344 },
-  { rank: 8, country: "Luxembourg", region: "Europe", score: 7.122 },
-  { rank: 9, country: "New Zealand", region: "Oceania", score: 7.123 },
-  { rank: 10, country: "Austria", region: "Europe", score: 7.097 },
-];
-
 function RankBadge({ rank }: { rank: number }) {
   const color =
     rank === 1
@@ -137,8 +56,118 @@ export default function HappyCat() {
   const [rankYear, setRankYear] = useState("2024");
   const [rankRegion, setRankRegion] = useState("All Regions");
 
-  const metricsA = countryMetrics[compareA] ?? countryMetrics.Finland;
-  const metricsB = countryMetrics[compareB] ?? countryMetrics.Denmark;
+  // Backend states
+  const [availableCountries, setAvailableCountries] = useState<string[]>([
+    "Finland",
+    "Denmark",
+    "Switzerland",
+    "Germany",
+  ]);
+  const [trendData, setTrendData] = useState<any[]>([]);
+  const [comparisonData, setComparisonData] = useState<any[]>([]);
+  const [metricsA, setMetricsA] = useState<any>({});
+  const [metricsB, setMetricsB] = useState<any>({});
+  const [rankingsData, setRankingsData] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+
+  const API_BASE = "http://localhost:3001/countries";
+
+  // Fetch Rankings & Available Countries
+  useEffect(() => {
+    fetch(`${API_BASE}/rankings?year=${rankYear}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setRankingsData(
+            data.map((d: any) => ({
+              rank: d.rank_in_year,
+              country: d.country,
+              region: "Global",
+              score: Number(d.happiness_score),
+            })),
+          );
+          const countries = data.map((d: any) => d.country);
+          if (countries.length > 0) {
+            setAvailableCountries([...new Set(countries)].sort());
+          }
+          setPage(1); // Zurück zur ersten Seite beim Jahreswechsel
+        }
+      })
+      .catch((err) => console.error("Error fetching rankings:", err));
+  }, [rankYear]);
+
+  // Fetch Trend Data
+  useEffect(() => {
+    fetch(`${API_BASE}/${trendCountry}/history`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const years = parseInt(trendPeriod);
+          const sliced = data.slice(-years);
+          setTrendData(
+            sliced.map((d: any) => ({
+              year: String(d.year),
+              score: Number(d.happiness_score),
+            })),
+          );
+        }
+      })
+      .catch((err) => console.error("Error fetching trend:", err));
+  }, [trendCountry, trendPeriod]);
+
+  // Fetch Comparison Data
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_BASE}/${compareA}/history`).then((r) => r.json()),
+      fetch(`${API_BASE}/${compareB}/history`).then((r) => r.json()),
+    ])
+      .then(([dataA, dataB]) => {
+        if (Array.isArray(dataA) && Array.isArray(dataB)) {
+          const map: Record<string, any> = {};
+          dataA.forEach((d: any) => {
+            map[d.year] = {
+              year: String(d.year),
+              scoreA: Number(d.happiness_score),
+            };
+          });
+          dataB.forEach((d: any) => {
+            if (!map[d.year]) map[d.year] = { year: String(d.year) };
+            map[d.year].scoreB = Number(d.happiness_score);
+          });
+          const merged = Object.values(map).sort(
+            (a, b) => Number(a.year) - Number(b.year),
+          );
+          setComparisonData(merged);
+
+          const latestA = dataA[dataA.length - 1];
+          if (latestA)
+            setMetricsA({
+              gdp: Number(latestA.gdp_per_capita).toFixed(3),
+              social: Number(latestA.social_support).toFixed(3),
+              life: Number(latestA.healthy_life_expectancy).toFixed(2) + " yrs",
+              corruption: Number(latestA.perceptions_of_corruption).toFixed(3),
+            });
+
+          const latestB = dataB[dataB.length - 1];
+          if (latestB)
+            setMetricsB({
+              gdp: Number(latestB.gdp_per_capita).toFixed(3),
+              social: Number(latestB.social_support).toFixed(3),
+              life: Number(latestB.healthy_life_expectancy).toFixed(2) + " yrs",
+              corruption: Number(latestB.perceptions_of_corruption).toFixed(3),
+            });
+        }
+      })
+      .catch((err) => console.error("Error fetching comparison:", err));
+  }, [compareA, compareB]);
+
+  // Pagination
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(rankingsData.length / itemsPerPage);
+  const paginatedRankings = rankingsData.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage,
+  );
 
   return (
     <div className="min-h-screen bg-stone-100">
@@ -184,7 +213,7 @@ export default function HappyCat() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.keys(countryMetrics).map((c) => (
+                        {availableCountries.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
                           </SelectItem>
@@ -263,7 +292,7 @@ export default function HappyCat() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.keys(countryMetrics).map((c) => (
+                        {availableCountries.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
                           </SelectItem>
@@ -275,7 +304,7 @@ export default function HappyCat() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.keys(countryMetrics).map((c) => (
+                        {availableCountries.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
                           </SelectItem>
@@ -361,23 +390,23 @@ export default function HappyCat() {
                     {[
                       {
                         label: "GDP per Capita",
-                        a: metricsA.gdp,
-                        b: metricsB.gdp,
+                        a: metricsA?.gdp ?? "-",
+                        b: metricsB?.gdp ?? "-",
                       },
                       {
                         label: "Social Support",
-                        a: metricsA.social,
-                        b: metricsB.social,
+                        a: metricsA?.social ?? "-",
+                        b: metricsB?.social ?? "-",
                       },
                       {
                         label: "Life Expectancy",
-                        a: metricsA.life,
-                        b: metricsB.life,
+                        a: metricsA?.life ?? "-",
+                        b: metricsB?.life ?? "-",
                       },
                       {
                         label: "Corruption",
-                        a: metricsA.corruption,
-                        b: metricsB.corruption,
+                        a: metricsA?.corruption ?? "-",
+                        b: metricsB?.corruption ?? "-",
                       },
                     ].map((row) => (
                       <div
@@ -412,9 +441,21 @@ export default function HappyCat() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="2011">2011</SelectItem>
+                      <SelectItem value="2012">2012</SelectItem>
+                      <SelectItem value="2013">2013</SelectItem>
+                      <SelectItem value="2014">2014</SelectItem>
+                      <SelectItem value="2015">2015</SelectItem>
+                      <SelectItem value="2016">2016</SelectItem>
+                      <SelectItem value="2017">2017</SelectItem>
+                      <SelectItem value="2018">2018</SelectItem>
+                      <SelectItem value="2019">2019</SelectItem>
+                      <SelectItem value="2020">2020</SelectItem>
+                      <SelectItem value="2021">2021</SelectItem>
                       <SelectItem value="2022">2022</SelectItem>
                       <SelectItem value="2023">2023</SelectItem>
                       <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={rankRegion} onValueChange={setRankRegion}>
@@ -452,7 +493,7 @@ export default function HappyCat() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rankingsData.map((row) => (
+                  {paginatedRankings.map((row) => (
                     <TableRow key={row.rank} className="border-stone-100">
                       <TableCell className="py-2.5">
                         <RankBadge rank={row.rank} />
@@ -473,16 +514,21 @@ export default function HappyCat() {
 
               {/* Pagination */}
               <div className="mt-auto pt-4 border-t border-stone-200 flex items-center justify-center gap-2 text-sm">
-                <button className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                >
                   <ChevronLeft size={14} /> Previous
                 </button>
-                <button className="w-8 h-8 rounded border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 transition-colors">
-                  1
-                </button>
                 <button className="w-8 h-8 rounded bg-teal-600 text-white font-medium">
-                  2
+                  {page}
                 </button>
-                <button className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages || totalPages === 0}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                >
                   Next <ChevronRight size={14} />
                 </button>
               </div>

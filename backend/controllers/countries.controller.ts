@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import {
   getCountryTrend,
   getYearlyRankings,
-} from "../services/countries.services.ts";
+} from "../services/countries.services.js";
 
 export async function getRankings(
   req: Request,
@@ -12,7 +12,6 @@ export async function getRankings(
 ) {
   try {
     const year = Number(req.query.year);
-    console.log("Router geladen");
     if (!year) {
       return res
         .status(400)
@@ -29,15 +28,11 @@ export async function getHistory(
   res: Response,
   next: NextFunction,
 ) {
-  console.log("!!! History Controller erreicht !!!"); // Erscheint das im Terminal?
   try {
     const name = String(req.params.name);
 
-    console.log("Anfrage für Land:", name); // Hilft beim Debuggen im Terminal
-
-    console.log("Router geladen");
     if (!name) {
-      return res.status(400).json({ error: "BLändername fehlt" });
+      return res.status(400).json({ error: "Ländername fehlt" });
     }
     const history = await getCountryTrend(name);
 

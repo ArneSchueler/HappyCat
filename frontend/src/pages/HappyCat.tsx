@@ -443,7 +443,6 @@ export default function HappyCat() {
                     <SelectContent>
                       <SelectItem value="2011">2011</SelectItem>
                       <SelectItem value="2012">2012</SelectItem>
-                      <SelectItem value="2013">2013</SelectItem>
                       <SelectItem value="2014">2014</SelectItem>
                       <SelectItem value="2015">2015</SelectItem>
                       <SelectItem value="2016">2016</SelectItem>

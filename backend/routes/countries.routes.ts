@@ -1,4 +1,5 @@
 import express from "express";
+import { getRankings } from "../controllers/countries.controller.js";
 
 // Router für Countries definieren
 
@@ -6,13 +7,7 @@ const countrieRouter = express.Router();
 
 // Endpoints definieren
 
-// gets all countries
-countrieRouter.get("/");
+// Endpoint: GET /api/countries/rankings?year=2019
+countrieRouter.get("/rankings", getRankings);
 
-// get country history
-countrieRouter.get("/:id/history");
-
-// get countries to compare
-countrieRouter.get("/compare?ids=finland,denmark");
-
-export { countrieRouter };
+export default countrieRouter;

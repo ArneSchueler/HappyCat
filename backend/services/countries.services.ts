@@ -1,15 +1,10 @@
-interface Country {
-  overall_rank: Number;
-  country_or_region: String;
-  score: Number;
-  gdp_per_capita: Number;
-  social_support: Number;
-  healthy_life_expectancy: Number;
-  freedom_to_make_life_choices: Number;
-  generosity: Number;
-  perceptions_of_corruption: Number;
-}
+import { getRankingsByYear } from "../repositories/countries.repo.ts";
 
-export async function getAllCountries() {
-  return await findAllCountries();
+export async function getYearlyRankings(year: number) {
+  if (year < 2005 || year > 2025) {
+    throw new Error("Ungültiges Jahr angegeben.");
+  }
+
+  const rankings = await getRankingsByYear(year);
+  return rankings;
 }

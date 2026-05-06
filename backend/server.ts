@@ -1,5 +1,5 @@
 import express from "express";
-import { countrieRouter } from "./routes/countries.routes.ts";
+import countrieRouter from "./routes/countries.routes.ts";
 
 const PORT = 3001;
 const app = express();

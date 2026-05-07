@@ -512,25 +512,55 @@ export default function HappyCat() {
               </Table>
 
               {/* Pagination */}
-              <div className="mt-auto pt-4 border-t border-stone-200 flex items-center justify-center gap-2 text-sm">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                >
-                  <ChevronLeft size={14} /> Previous
-                </button>
-                <button className="w-8 h-8 rounded bg-teal-600 text-white font-medium">
-                  {page}
-                </button>
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages || totalPages === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                >
-                  Next <ChevronRight size={14} />
-                </button>
-              </div>
+              {(() => {
+                const pages: (number | "...")[] = [];
+                if (totalPages <= 7) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  pages.push(1);
+                  if (page > 3) pages.push("...");
+                  for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+                  if (page < totalPages - 2) pages.push("...");
+                  pages.push(totalPages);
+                }
+                return (
+                  <div className="mt-auto pt-4 border-t border-stone-200 flex items-center justify-center gap-1 text-sm flex-wrap">
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-100 hover:border-stone-300 hover:text-stone-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft size={14} /> Previous
+                    </button>
+                    {pages.map((p, i) =>
+                      p === "..." ? (
+                        <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-stone-400">
+                          …
+                        </span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => setPage(p)}
+                          className={`w-8 h-8 rounded border font-medium transition-colors ${
+                            page === p
+                              ? "bg-teal-600 border-teal-600 text-white"
+                              : "border-stone-200 text-stone-600 hover:bg-stone-100 hover:border-stone-300 hover:text-stone-800"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages || totalPages === 0}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-100 hover:border-stone-300 hover:text-stone-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Next <ChevronRight size={14} />
+                    </button>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>

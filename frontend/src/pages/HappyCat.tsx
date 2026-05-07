@@ -217,9 +217,9 @@ export default function HappyCat() {
   }, [rankRegion, rankYear]);
 
   return (
-    <div className="min-h-screen bg-stone-100">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white border-b border-stone-200  py-3 flex items-center justify-around">
+      <header className="bg-white/70 backdrop-blur-md border-b border-white/40  py-3 flex items-center justify-around">
         <div className="flex items-center gap-2.5">
           {/* Use Vite/React's import for static assets */}
           <img
@@ -245,7 +245,7 @@ export default function HappyCat() {
           {/* Left column */}
           <div className="space-y-5">
             {/* Happiness Trends */}
-            <Card className="shadow-sm">
+            <Card className="bg-[#ffffffcc] backdrop-blur-sm border border-[#cadbde] shadow-md rounded-2xl">
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
@@ -281,7 +281,7 @@ export default function HappyCat() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-2 px-2 pb-4">
+              <CardContent className="pt-2 px-2 pb-4 text-xl font-semibild text-stone-800">
                 <ResponsiveContainer width="100%" height={220}>
                   <LineChart
                     data={trendData}
@@ -328,7 +328,7 @@ export default function HappyCat() {
             </Card>
 
             {/* Country Comparison */}
-            <Card className="shadow-sm">
+            <Card className="bg-[#ffffffcc] backdrop-blur-sm border border-[#cbeef6] shadow-md rounded-2xl">
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
@@ -478,7 +478,7 @@ export default function HappyCat() {
           </div>
 
           {/* Right column — Rankings */}
-          <Card className="shadow-sm flex flex-col">
+          <Card className="bg-[#ffffffcc] backdrop-blur-sm border border-[#e0efca] shadow-md rounded-2xl flex flex-col">
             <CardHeader className="pb-0 pt-4 px-5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 font-semibold text-stone-700">

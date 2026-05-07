@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS world_happiness (
     year INTEGER,
     rank_in_year INTEGER,
     country VARCHAR(255),
+    region VARCHAR(255),
     happiness_score NUMERIC(5,3),
     lower_whisker NUMERIC(10,3),
     upper_whisker NUMERIC(10,3),
@@ -17,6 +18,6 @@ CREATE TABLE IF NOT EXISTS world_happiness (
 
 -- Daten aus der CSV kopieren
 -- Da die CSV im gleichen Ordner gemountet ist, findet Postgres sie unter /docker-entrypoint-initdb.d/
-COPY world_happiness(year, rank_in_year, country, happiness_score, lower_whisker, upper_whisker, gdp_per_capita, social_support, healthy_life_expectancy, freedom_to_make_choices, generosity, perceptions_of_corruption, dystopia_plus_residual)
+COPY world_happiness(year, rank_in_year, country, region, happiness_score, lower_whisker, upper_whisker, gdp_per_capita, social_support, healthy_life_expectancy, freedom_to_make_choices, generosity, perceptions_of_corruption, dystopia_plus_residual)
 FROM '/docker-entrypoint-initdb.d/world_happiness_report_2005_2025.csv'
 WITH (FORMAT csv, HEADER true, DELIMITER ',');

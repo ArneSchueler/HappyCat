@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -24,7 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, TrendingUp, Globe, Trophy } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp,
+  Globe,
+  Trophy,
+} from "lucide-react";
 
 // ── Static data ──────────────────────────────────────────────────────────────
 
@@ -70,9 +76,12 @@ export default function HappyCat() {
   const [rankingsData, setRankingsData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
 
+  // NEW: Regions for region select
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+
   const API_BASE = "http://localhost:3001/countries";
 
-  // Fetch Rankings & Available Countries
+  // Fetch Rankings & Available Countries & Regions
   useEffect(() => {
     fetch(`${API_BASE}/rankings?year=${rankYear}`)
       .then((res) => res.json())
@@ -82,7 +91,7 @@ export default function HappyCat() {
             data.map((d: any) => ({
               rank: d.rank_in_year,
               country: d.country,
-              region: "Global",
+              region: d.region,
               score: Number(d.happiness_score),
             })),
           );
@@ -90,7 +99,19 @@ export default function HappyCat() {
           if (countries.length > 0) {
             setAvailableCountries([...new Set(countries)].sort());
           }
-          setPage(1); // Zurück zur ersten Seite beim Jahreswechsel
+          // Collect unique regions from data for the region select
+          const regionsSet = new Set<string>();
+          data.forEach((d: any) => {
+            if (
+              d.region &&
+              typeof d.region === "string" &&
+              d.region.trim().length > 0
+            ) {
+              regionsSet.add(d.region);
+            }
+          });
+          setAvailableRegions(Array.from(regionsSet).sort());
+          setPage(1); // Zurück zur ersten Seite beim Jahreswechsel/Regionchange
         }
       })
       .catch((err) => console.error("Error fetching rankings:", err));
@@ -161,13 +182,39 @@ export default function HappyCat() {
       .catch((err) => console.error("Error fetching comparison:", err));
   }, [compareA, compareB]);
 
+  // Filter rankings by region selection
+  const filteredRankingsData = useMemo(() => {
+    if (rankRegion === "All Regions") {
+      return rankingsData;
+    } else {
+      // Only those with region match
+      return rankingsData.filter((r) => r.region === rankRegion);
+    }
+  }, [rankingsData, rankRegion]);
+
+  // Renumber ranks for filtered region so that rank is always 1...N for each region selection, and sorted correctly by score descending (lower number "rank" is better)
+  const displayedRankings = useMemo(() => {
+    if (rankRegion === "All Regions") return filteredRankingsData;
+    // Sort by score descending, then assign new ranks (1, 2, 3...)
+    const sorted = [...filteredRankingsData].sort((a, b) => b.score - a.score);
+    return sorted.map((d, idx) => ({
+      ...d,
+      rank: idx + 1,
+    }));
+  }, [filteredRankingsData, rankRegion]);
+
   // Pagination
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(rankingsData.length / itemsPerPage);
-  const paginatedRankings = rankingsData.slice(
+  const totalPages = Math.ceil(displayedRankings.length / itemsPerPage);
+  const paginatedRankings = displayedRankings.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage,
   );
+
+  // When region or display data changes, reset page to 1
+  useEffect(() => {
+    setPage(1);
+  }, [rankRegion, rankYear]);
 
   return (
     <div className="min-h-screen bg-stone-100">
@@ -202,7 +249,8 @@ export default function HappyCat() {
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
-                    <TrendingUp size={16} className="text-teal-600" /> Happiness Trends
+                    <TrendingUp size={16} className="text-teal-600" /> Happiness
+                    Trends
                   </div>
                   <div className="flex gap-2">
                     <Select
@@ -284,7 +332,8 @@ export default function HappyCat() {
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
-                    <Globe size={16} className="text-blue-500" /> Country Comparison
+                    <Globe size={16} className="text-blue-500" /> Country
+                    Comparison
                   </div>
                   <div className="flex gap-2">
                     <Select value={compareA} onValueChange={setCompareA}>
@@ -433,7 +482,8 @@ export default function HappyCat() {
             <CardHeader className="pb-0 pt-4 px-5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 font-semibold text-stone-700">
-                  <Trophy size={16} className="text-amber-500" /> Country Rankings
+                  <Trophy size={16} className="text-amber-500" /> Country
+                  Rankings
                 </div>
                 <div className="flex gap-2">
                   <Select value={rankYear} onValueChange={setRankYear}>
@@ -463,11 +513,12 @@ export default function HappyCat() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="All Regions">All Regions</SelectItem>
-                      <SelectItem value="Europe">Europe</SelectItem>
-                      <SelectItem value="Asia">Asia</SelectItem>
-                      <SelectItem value="Americas">Americas</SelectItem>
-                      <SelectItem value="Africa">Africa</SelectItem>
-                      <SelectItem value="Oceania">Oceania</SelectItem>
+                      {/* Get unique regions from backend data */}
+                      {availableRegions.map((region) => (
+                        <SelectItem key={region} value={region}>
+                          {region}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -519,7 +570,12 @@ export default function HappyCat() {
                 } else {
                   pages.push(1);
                   if (page > 3) pages.push("...");
-                  for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+                  for (
+                    let i = Math.max(2, page - 1);
+                    i <= Math.min(totalPages - 1, page + 1);
+                    i++
+                  )
+                    pages.push(i);
                   if (page < totalPages - 2) pages.push("...");
                   pages.push(totalPages);
                 }
@@ -534,7 +590,10 @@ export default function HappyCat() {
                     </button>
                     {pages.map((p, i) =>
                       p === "..." ? (
-                        <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-stone-400">
+                        <span
+                          key={`ellipsis-${i}`}
+                          className="w-8 h-8 flex items-center justify-center text-stone-400"
+                        >
                           …
                         </span>
                       ) : (
@@ -549,10 +608,12 @@ export default function HappyCat() {
                         >
                           {p}
                         </button>
-                      )
+                      ),
                     )}
                     <button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={page === totalPages || totalPages === 0}
                       className="flex items-center gap-1 px-3 py-1.5 rounded border border-stone-200 text-stone-500 hover:bg-stone-100 hover:border-stone-300 hover:text-stone-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >

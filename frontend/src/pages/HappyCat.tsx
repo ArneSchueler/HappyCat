@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingUp, Globe, Trophy } from "lucide-react";
 
 // ── Static data ──────────────────────────────────────────────────────────────
 
@@ -202,7 +202,7 @@ export default function HappyCat() {
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
-                    📊 Happiness Trends
+                    <TrendingUp size={16} className="text-teal-600" /> Happiness Trends
                   </div>
                   <div className="flex gap-2">
                     <Select
@@ -284,7 +284,7 @@ export default function HappyCat() {
               <CardHeader className="pb-0 pt-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-semibold text-stone-700">
-                    🌍 Country Comparison
+                    <Globe size={16} className="text-blue-500" /> Country Comparison
                   </div>
                   <div className="flex gap-2">
                     <Select value={compareA} onValueChange={setCompareA}>
@@ -433,7 +433,7 @@ export default function HappyCat() {
             <CardHeader className="pb-0 pt-4 px-5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 font-semibold text-stone-700">
-                  🏆 Country Rankings
+                  <Trophy size={16} className="text-amber-500" /> Country Rankings
                 </div>
                 <div className="flex gap-2">
                   <Select value={rankYear} onValueChange={setRankYear}>
